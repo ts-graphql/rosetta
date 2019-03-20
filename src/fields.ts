@@ -4,8 +4,8 @@ import {
   QueryChildren,
   QueryField,
   RequireKeys,
+  isQueryField,
 } from './types';
-import { isQueryField } from '../lib/src/types';
 
 export const leafField = <
   TParent,
