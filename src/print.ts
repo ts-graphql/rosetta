@@ -1,5 +1,4 @@
 import { Args, Document, QueryField, QueryObjectType } from './types';
-import stringifyObject from 'stringify-object';
 import { VariableDefinitionMap, Variable } from './variables';
 
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
@@ -27,7 +26,7 @@ const printArgs = (args: Args<any>): string => {
       }
 
       if (value && typeof value === 'object') {
-        return `${key}: ${stringifyObject(value, { singleQuotes: false }).replace(/(\n|\t)/g, '')}`;
+        return `${key}: { ${printArgs(value)} }`;
       }
 
       return `${key}: ${JSON.stringify(value)}`;

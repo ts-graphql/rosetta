@@ -8,9 +8,9 @@ const getFilesInDir = async (...paths: string[]): Promise<string[]> => {
   return files.map((file: string) => path.join(...paths, file));
 }
 
-export const typeCheckFolder = async (...paths: string[]): Promise<void> {
+export const typeCheckFolder = async (paths: string[], expectError?: boolean): Promise<void> => {
   const files = await getFilesInDir(...paths);
-  await typeCheckFiles(files);
+  await typeCheckFiles(files, expectError);
 }
 
 export const typeCheckFiles = async (files: string[], expectError?: boolean) => {

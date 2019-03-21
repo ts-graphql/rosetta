@@ -5,7 +5,8 @@ import {
   branchFieldWithArgs,
   GQLString,
   leafField,
-  nonNull, print,
+  nonNull,
+  print, QueryObjectType,
   rootType,
 } from '../';
 
@@ -14,8 +15,8 @@ class Address {
   line2!: string;
 }
 
-const line1 = leafField<Pick<Address, 'line1'>, 'line1'>('line1');
-const line2 = leafField<Pick<Address, 'line2'>, 'line2'>('line2');
+const line1 = leafField<Address, 'line1'>('line1');
+const line2 = leafField<Address, 'line2'>('line2');
 
 class User {
   name?: string;

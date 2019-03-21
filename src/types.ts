@@ -1,10 +1,12 @@
-import { TypeWrapper, Variable } from './variables';
+import { Variable } from './variables';
 
 export type ArrayValue<A extends Array<any>> = A extends Array<infer V> ? V : never;
 
 export type EnforceQueryObjectType<T> = T extends QueryObjectType<any> ? T : never;
 
 export type RequireKeys<T extends object> = keyof T extends never ? never : T;
+
+export type Maybe<T> = T | null;
 
 export type ReturnedObjectType<T extends QueryObjectType<any>> = {
     [key in keyof T]: T[key] extends QueryField<infer P, infer N, any, infer C> ?
@@ -42,8 +44,10 @@ export const isQueryField = (x: any): x is QueryField<any, any, any, any> => {
 };
 
 export type Args<T> = {
-  [key in keyof T]: Variable<T[key]> | T[key];
-};
+  [key in keyof T]: Variable<T[key]> | NestedArgs<T[key]>;
+}
+
+export type NestedArgs<T> = T extends object ? Args<T> : T;
 
 export type NestedQueryField<TKey extends keyof any, TField> = {
   [key in TKey]: TField
@@ -51,7 +55,7 @@ export type NestedQueryField<TKey extends keyof any, TField> = {
 
 export type RootType = 'query' | 'mutation' | 'subscription';
 
-export type Document<TVariables, TQuery> = {
+export type Document<TVariables, TQuery extends QueryObjectType<any>> = {
   type: RootType,
   name?: string,
   variables: TVariables,
