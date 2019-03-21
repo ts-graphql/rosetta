@@ -65,13 +65,3 @@ export const branchFieldWithArgs = <
     children: children as TSelectedChildren,
   },
 } as NestedQueryField<TName, QueryField<TParent, TName, Args<TArgs>, TSelectedChildren>>);
-
-export function alias<TName extends string, T extends QueryField<any, any, any, any>>(name: TName, field: T): NestedQueryField<TName, T>;
-export function alias<TName extends string, T extends QueryField<any, any, any, any>>(name: TName, field: NestedQueryField<any, T>): NestedQueryField<TName, T>;
-export function alias<TName extends string, T extends QueryField<any, any, any, any>>(name: TName, field: T | NestedQueryField<any, T>): NestedQueryField<TName, T> {
-  return {
-    [name]: isQueryField(field)
-      ? field
-      : field[Object.keys(field)[0]],
-  } as NestedQueryField<TName, T>;
-}

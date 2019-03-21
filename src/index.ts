@@ -1,5 +1,4 @@
 export {
-  alias,
   branchField,
   branchFieldWithArgs,
   leafField,

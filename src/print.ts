@@ -1,4 +1,4 @@
-import { Args, Document, QueryField, QueryObjectType } from './types';
+import { Args, Document, isQueryField, QueryField, QueryObjectType } from './types';
 import { VariableDefinitionMap, Variable } from './variables';
 
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
@@ -37,7 +37,11 @@ const printArgs = (args: Args<any>): string => {
 const linesForFields = (fieldMap: QueryObjectType<any>, indentation: string = '  '): string[] => {
   let output = [];
   for (const alias of Object.keys(fieldMap)) {
-    output.push(...linesForField(alias, fieldMap[alias]));
+    const fieldOrNested = fieldMap[alias];
+    const field = isQueryField(fieldOrNested)
+      ? fieldOrNested
+      : fieldOrNested[Object.keys(fieldOrNested)[0]];
+    output.push(...linesForField(alias, field));
   }
   return output.map((line) => `${indentation}${line}`);
 }

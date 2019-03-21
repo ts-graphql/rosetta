@@ -1,6 +1,5 @@
 import 'jest';
 import {
-  alias,
   branchField,
   branchFieldWithArgs,
   GQLString,
@@ -41,14 +40,14 @@ describe('print', () => {
     const testQuery = query('testQuery',
       { foo: nonNull(GQLString) },
       ({ foo }) => ({
-        ...alias('aliasTest', users({ query: foo, first: 10 }, {
+        aliasTest: users({ query: foo, first: 10 }, {
           name,
           email,
           ...address({
             line1,
             line2,
           }),
-        })),
+        }),
       })
     );
 

@@ -1,4 +1,3 @@
-import { alias } from '../../fields';
 import { nonNull, variable } from '../../variables';
 import { GQLString } from '../../scalars';
 import { ReturnedObjectType } from '../../types';
@@ -9,19 +8,21 @@ const queryA = query('a',
   ({ strVar }) => ({
     ...foo({ nested: { str: strVar, num: 4 } }, {
       ...bar({
+        int,
+        float,
         str,
-        ...alias('str2', str),
+        str2: str,
         ...bool({}),
-        ...alias('bool2', bool({ test: strVar })),
+        bool2: bool({ test: strVar }),
       }),
       ...barArr({
         int,
         float,
       })
     }),
-    ...alias('foo2', foo({}, {
+    foo2: foo({}, {
       ...bar({ int }),
-    })),
+    }),
   })
 );
 
@@ -30,6 +31,8 @@ const returnValueA: ReturnedObjectType<typeof queryA.query> = {
     bar: {
       str: 'something',
       str2: 'something',
+      int: 1,
+      float: 0.1,
       bool: false,
       bool2: true,
     },

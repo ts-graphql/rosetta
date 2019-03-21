@@ -8,12 +8,18 @@ export type RequireKeys<T extends object> = keyof T extends never ? never : T;
 
 export type Maybe<T> = T | null;
 
+export type ReturnedObjectTypeField<P, N extends keyof P, C> = P[N] extends Array<infer ArrayValue>
+  ? ArrayValue extends object ? Array<ReturnedObjectType<EnforceQueryObjectType<C>>> : P[N]
+  : P[N] extends object ? ReturnedObjectType<EnforceQueryObjectType<C>> : P[N];
+
 export type ReturnedObjectType<T extends QueryObjectType<any>> = {
-    [key in keyof T]: T[key] extends QueryField<infer P, infer N, any, infer C> ?
-        P[N] extends Array<infer ArrayValue>
-            ? ArrayValue extends object ? Array<ReturnedObjectType<EnforceQueryObjectType<C>>> : P[N]
-            : P[N] extends object ? ReturnedObjectType<EnforceQueryObjectType<C>> : P[N]
-        : never;
+    [key in keyof T]: T[key] extends QueryField<infer P, infer N, any, infer C>
+      ? ReturnedObjectTypeField<P, N, C>
+      : T[key] extends NestedQueryField<any, infer F>
+        ? F extends QueryField<infer P, infer N, any, infer C>
+          ? ReturnedObjectTypeField<P, N, C>
+          : never
+        : never
 }
 
 export type QueryObjectTypeField<TParent, TKey extends keyof TParent> = TParent[TKey] extends Array<any>
@@ -21,7 +27,7 @@ export type QueryObjectTypeField<TParent, TKey extends keyof TParent> = TParent[
   : QueryField<Partial<TParent>, TKey, any>
 
 export type QueryObjectType<T> = {
-  [key: string]: QueryObjectTypeField<T, keyof T>
+  [key: string]: NestedQueryField<any, QueryObjectTypeField<T, keyof T>> | QueryObjectTypeField<T, keyof T>
 }
 
 export type QueryChildren<T> = T extends object ? QueryObjectType<T> : undefined;
