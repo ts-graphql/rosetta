@@ -1,5 +1,5 @@
 {
-  "name": "ts-graphql-query",
+  "name": "@ts-graphql/rosetta",
   "version": "0.0.0",
   "main": "lib/index.js",
   "license": "MIT",
