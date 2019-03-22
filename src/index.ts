@@ -39,4 +39,3 @@ export {
   VariableDefinitionMap,
   VariableMapValues,
 } from './variables';
-
