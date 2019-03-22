@@ -7,7 +7,7 @@ export {
 
 export { print } from './print';
 
-export { rootType } from './rootType';
+export { operation } from './operation';
 
 export {
   GQLID,

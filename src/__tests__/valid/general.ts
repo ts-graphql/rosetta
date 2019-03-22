@@ -1,7 +1,7 @@
 import { nonNull, variable } from '../../variables';
 import { GQLString } from '../../scalars';
 import { ReturnedObjectType } from '../../types';
-import { bar, barArr, bool, float, foo, FooInput, int, query, str } from '../testSchema';
+import { bar, barArr, bool, float, foo, FooInput, int, maybeStr, query, str } from '../testSchema';
 
 const queryA = query('a',
   { strVar: nonNull(GQLString) },
@@ -53,3 +53,21 @@ const queryB = query('b',
     }),
   }),
 );
+
+const queryNoNameNoVariables = query({
+  ...foo({}, {
+    maybeStr,
+  }),
+});
+
+const queryNameNoVariables = query('foo', {
+  ...foo({}, {
+    maybeStr,
+  }),
+});
+
+const queryNoNameVariables = query({ objVar: variable(FooInput) }, ({ objVar }) => ({
+  ...foo({ nested: objVar }, {
+    maybeStr,
+  })
+}));

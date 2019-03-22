@@ -59,10 +59,10 @@ export type NestedQueryField<TKey extends keyof any, TField> = {
   [key in TKey]: TField
 };
 
-export type RootType = 'query' | 'mutation' | 'subscription';
+export type OperationType = 'query' | 'mutation' | 'subscription';
 
 export type Document<TVariables, TQuery extends QueryObjectType<any>> = {
-  type: RootType,
+  type: OperationType,
   name?: string,
   variables: TVariables,
   query: TQuery,

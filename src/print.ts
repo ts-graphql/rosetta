@@ -4,7 +4,11 @@ import { VariableDefinitionMap, Variable } from './variables';
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
   const { type, name, variables, query } = document;
   const output = [];
-  output.push(`${type} ${name ? `${name}` : ''}${variables ? `(${printVariables(variables)})` : ''} {`);
+  output.push(
+    [type, `${name ? `${name}` : ''}${variables ? `(${printVariables(variables)})` : ''}`, '{']
+      .filter((val) => !!val)
+      .join(' ')
+  );
   output.push(...linesForFields(query));
   output.push('}');
 

@@ -1,6 +1,6 @@
 import { branchField, branchFieldWithArgs, leafField, leafFieldWithArgs } from '../fields';
 import { Maybe } from '../types';
-import { rootType } from '../rootType';
+import { operation } from '../operation';
 
 export class Foo {
   maybeStr?: Maybe<string>
@@ -45,4 +45,4 @@ export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: Maybe<FooIn
 export const maybeFooArr = branchFieldWithArgs<Query, 'foo', Foo, { nested?: Maybe<FooInput>, num?: Maybe<number> }>('foo');
 export const fooRequiredArg = branchFieldWithArgs<Query, 'fooRequiredArg', Foo, { str: string }>('fooRequiredArg');
 
-export const query = rootType<Query>('query');
+export const query = operation<Query>('query');
