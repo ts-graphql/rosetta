@@ -13,13 +13,13 @@ export type ReturnedObjectTypeField<P, N extends keyof P, C> = P[N] extends Arra
   : P[N] extends object ? ReturnedObjectType<EnforceQueryObjectType<C>> : P[N];
 
 export type ReturnedObjectType<T extends QueryObjectType<any>> = {
-    [key in keyof T]: T[key] extends QueryField<infer P, infer N, any, infer C>
-      ? ReturnedObjectTypeField<P, N, C>
-      : T[key] extends NestedQueryField<any, infer F>
-        ? F extends QueryField<infer P, infer N, any, infer C>
-          ? ReturnedObjectTypeField<P, N, C>
-          : never
+  [key in keyof T]: T[key] extends QueryField<infer P, infer N, any, infer C>
+    ? ReturnedObjectTypeField<P, N, C>
+    : T[key] extends NestedQueryField<any, infer F>
+      ? F extends QueryField<infer P, infer N, any, infer C>
+        ? ReturnedObjectTypeField<P, N, C>
         : never
+      : never
 }
 
 export type QueryObjectTypeField<TParent, TKey extends keyof TParent> = TParent[TKey] extends Array<any>
@@ -33,20 +33,20 @@ export type QueryObjectType<T> = {
 export type QueryChildren<T> = T extends object ? QueryObjectType<T> : undefined;
 
 export type QueryField<TParent, TName extends keyof TParent, TArgs = {}, TChildren extends QueryChildren<any> = QueryChildren<TParent[TName]>> = {
-    name: TName,
-    parent: TParent,
-    type: TParent[TName],
-    args: TArgs,
-    children: TChildren,
+  name: TName,
+  parent: TParent,
+  type: TParent[TName],
+  args: TArgs,
+  children: TChildren,
 };
 
 export const isQueryField = (x: any): x is QueryField<any, any, any, any> => {
-    return (
-        'parent' in x &&
-        'type' in x &&
-        'args' in x &&
-        'children' in x
-    );
+  return (
+    'parent' in x &&
+    'type' in x &&
+    'args' in x &&
+    'children' in x
+  );
 };
 
 export type Args<T> = {
