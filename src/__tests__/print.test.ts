@@ -5,17 +5,22 @@ import {
   GQLString,
   leafField,
   nonNull,
-  print, QueryObjectType,
+  print,
   operation,
 } from '../';
+import { fragment } from '../fields';
 
 class Address {
   line1!: string;
   line2!: string;
+  city!: string;
+  state!: string;
 }
 
 const line1 = leafField<Address, 'line1'>('line1');
 const line2 = leafField<Address, 'line2'>('line2');
+const city = leafField<Address, 'city'>('city');
+const state = leafField<Address, 'state'>('state');
 
 class User {
   name?: string;
@@ -133,6 +138,62 @@ describe('print', () => {
       line2
     }
   }
+}`;
+    const result = print(testQuery);
+    expect(result).toEqual(expected);
+  });
+
+  it('should return expected value for query with fragments', () => {
+    const addressFragment1 = fragment('AddressFragment1', Address, {
+      line1,
+      line2,
+    });
+    const addressFragment2 = fragment('AddressFragment2', Address, {
+      state,
+    });
+    const testQuery = query('testQuery', {
+      ...users({}, {
+        ...fragment(User, {
+          name,
+          email,
+          ...address({
+            ...addressFragment1,
+            ...fragment(Address, {
+              city,
+            }),
+          })
+        }),
+        ...address({
+          ...addressFragment2,
+        }),
+      }),
+    });
+
+    const expected = `query testQuery {
+  users {
+    ...on User {
+      name
+      email
+      address {
+        ...AddressFragment1
+        ...on Address {
+          city
+        }
+      }
+    }
+    address {
+      ...AddressFragment2
+    }
+  }
+}
+
+fragment AddressFragment1 {
+  line1
+  line2
+}
+
+fragment AddressFragment2 {
+  state
 }`;
     const result = print(testQuery);
     expect(result).toEqual(expected);

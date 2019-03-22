@@ -1,6 +1,7 @@
 export {
   branchField,
   branchFieldWithArgs,
+  fragment,
   leafField,
   leafFieldWithArgs,
 } from './fields';
@@ -20,6 +21,7 @@ export {
 export {
   Args,
   Document,
+  Fragment,
   NestedQueryField,
   QueryChildren,
   QueryObjectType,

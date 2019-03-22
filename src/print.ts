@@ -1,4 +1,4 @@
-import { Args, Document, isQueryField, QueryField, QueryObjectType } from './types';
+import { Args, Document, Fragment, isQueryField, QueryField, QueryObjectType, QueryObjectTypeValue } from './types';
 import { VariableDefinitionMap, Variable } from './variables';
 
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
@@ -11,6 +11,18 @@ export const print = (document: Document<any, QueryObjectType<any>>): string => 
   );
   output.push(...linesForFields(query));
   output.push('}');
+
+  const namedFragments = getNamedFragments(query);
+
+  const nameMap: { [key: string]: boolean } = {};
+
+  for (const fragment of namedFragments) {
+    if (nameMap[fragment.name!]) {
+      throw new Error('Cannot have different fragments with same name');
+    }
+    nameMap[fragment.name!] = true;
+    output.push('', ...linesForNamedFragment(fragment));
+  }
 
   return output.join('\n');
 }
@@ -38,13 +50,29 @@ const printArgs = (args: Args<any>): string => {
     .join(', ');
 }
 
+const resolveFieldForValue = (value: QueryObjectTypeValue<any>): QueryField<any, any, any, any> => {
+  return isQueryField(value)
+    ? value
+    : value[Object.keys(value)[0]];
+}
+
 const linesForFields = (fieldMap: QueryObjectType<any>, indentation: string = '  '): string[] => {
-  let output = [];
+  const output = [];
+  const printedFragments: Array<Fragment<QueryObjectType<any>>> = [];
   for (const alias of Object.keys(fieldMap)) {
-    const fieldOrNested = fieldMap[alias];
-    const field = isQueryField(fieldOrNested)
-      ? fieldOrNested
-      : fieldOrNested[Object.keys(fieldOrNested)[0]];
+    const field = resolveFieldForValue(fieldMap[alias]);
+    const { fragment } = field;
+    if (fragment) {
+      if (printedFragments.indexOf(fragment) !== -1) {
+        continue;
+      }
+      printedFragments.push(fragment);
+      output.push(...(fragment.name
+        ? [`...${fragment.name}`]
+        : linesForInlineFragment(fragment))
+      );
+      continue;
+    }
     output.push(...linesForField(alias, field));
   }
   return output.map((line) => `${indentation}${line}`);
@@ -65,4 +93,41 @@ const linesForField = (alias: string, field: QueryField<any, any, any, any>): st
   }
 
   return output;
+}
+
+const linesForInlineFragment = (fragment: Fragment<QueryObjectType<any>>) => {
+  return [
+    `...on ${fragment.onType.name} {`,
+    ...linesForFields(fragment.fields),
+    `}`,
+  ];
+}
+
+const linesForNamedFragment = (fragment: Fragment<QueryObjectType<any>>) => {
+  return [
+    `fragment ${fragment.name!} {`,
+    ...linesForFields(fragment.fields),
+    `}`,
+  ];
+}
+
+const getNamedFragments = (map: QueryObjectType<any>, alreadyProcessed: Array<Fragment<QueryObjectType<any>>> = []): Array<Fragment<QueryObjectType<any>>> => {
+  const processed = [...alreadyProcessed];
+  const fragments = [];
+  for (const key of Object.keys(map)) {
+    const field = resolveFieldForValue(map[key]);
+    const fragment = field.fragment;
+    if (fragment && processed.indexOf(fragment) === -1) {
+      processed.push(fragment);
+      fragments.push(...getNamedFragments(fragment.fields, processed));
+      if (fragment.name) {
+        fragments.push(fragment);
+      }
+      continue;
+    }
+    if (field.children) {
+      fragments.push(...getNamedFragments(field.children, processed));
+    }
+  }
+  return fragments;
 }

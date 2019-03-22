@@ -1,14 +1,21 @@
 import { nonNull, variable } from '../../variables';
 import { GQLString } from '../../scalars';
 import { ReturnedObjectType } from '../../types';
-import { bar, barArr, bool, float, foo, FooInput, int, maybeStr, query, str } from '../testSchema';
+import { Bar, bar, barArr, bool, float, Foo, foo, FooInput, int, maybeStr, query, str } from '../testSchema';
+import { fragment } from '../../fields';
+
+const testFragment = fragment(Foo, {
+  maybeStr,
+});
 
 const queryA = query('a',
   { strVar: nonNull(GQLString) },
   ({ strVar }) => ({
     ...foo({ nested: { str: strVar, num: 4 } }, {
       ...bar({
-        int,
+        ...fragment(Bar, {
+          int,
+        }),
         float,
         str,
         str2: str,
@@ -71,3 +78,58 @@ const queryNoNameVariables = query({ objVar: variable(FooInput) }, ({ objVar }) 
     maybeStr,
   })
 }));
+
+const inlineBarFragment = fragment(Bar, {
+  str,
+  int,
+});
+
+const namedBarFragment = fragment('NamedBarFragment', Bar, {
+  float,
+});
+
+const inlineFragmentWithInlineFragment = fragment(Foo, {
+  maybeStr,
+  ...bar({
+    ...inlineBarFragment,
+  }),
+});
+
+const inlineFragmentWithNamedFragment = fragment(Foo, {
+  ...bar({
+    ...namedBarFragment,
+  }),
+});
+
+const queryWithFragments = query({
+  ...foo({}, {
+    ...inlineFragmentWithInlineFragment,
+    // Types cannot be correct when multiple fragments both include
+    // the same object type field
+    // ...inlineFragmentWithNamedFragment,
+  }),
+});
+
+const queryWithFragmentsReturnValue: ReturnedObjectType<typeof queryWithFragments.query> = {
+  foo: {
+    maybeStr: null,
+    bar: {
+      int: 3,
+      str: '',
+    }
+  }
+}
+
+const queryWithFragments2 = query({
+  ...foo({}, {
+    ...inlineFragmentWithNamedFragment,
+  }),
+});
+
+const queryWithFragmentsReturnValue2: ReturnedObjectType<typeof queryWithFragments2.query> = {
+  foo: {
+    bar: {
+      float: 4.5,
+    }
+  }
+}

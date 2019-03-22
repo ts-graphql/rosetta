@@ -1,4 +1,4 @@
-import { Variable } from './variables';
+import { EmptyConstructor, Variable } from './variables';
 
 export type ArrayValue<A extends Array<any>> = A extends Array<infer V> ? V : never;
 
@@ -26,9 +26,12 @@ export type QueryObjectTypeField<TParent, TKey extends keyof TParent> = TParent[
   ? QueryField<Partial<TParent>, TKey, any, QueryChildren<ArrayValue<TParent[TKey]>>>
   : QueryField<Partial<TParent>, TKey, any>
 
+export type QueryObjectTypeValue<T> =
+  NestedQueryField<any, QueryObjectTypeField<T, keyof T>> | QueryObjectTypeField<T, keyof T>;
+
 export type QueryObjectType<T> = {
-  [key: string]: NestedQueryField<any, QueryObjectTypeField<T, keyof T>> | QueryObjectTypeField<T, keyof T>
-}
+  [key: string]: QueryObjectTypeValue<T>
+};
 
 export type QueryChildren<T> = T extends object ? QueryObjectType<T> : undefined;
 
@@ -38,6 +41,7 @@ export type QueryField<TParent, TName extends keyof TParent, TArgs = {}, TChildr
   type: TParent[TName],
   args: TArgs,
   children: TChildren,
+  fragment?: Fragment<TChildren>,
 };
 
 export const isQueryField = (x: any): x is QueryField<any, any, any, any> => {
@@ -47,6 +51,12 @@ export const isQueryField = (x: any): x is QueryField<any, any, any, any> => {
     'args' in x &&
     'children' in x
   );
+};
+
+export type Fragment<TChildren extends QueryChildren<any>> = {
+  onType: EmptyConstructor<any>,
+  name?: string,
+  fields: TChildren,
 };
 
 export type Args<T> = {

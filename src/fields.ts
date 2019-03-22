@@ -4,8 +4,9 @@ import {
   QueryChildren,
   QueryField,
   RequireKeys,
-  isQueryField,
+  isQueryField, Fragment, QueryObjectType,
 } from './types';
+import { EmptyConstructor } from './variables';
 
 export const leafField = <
   TParent,
@@ -65,3 +66,33 @@ export const branchFieldWithArgs = <
     children: children as TSelectedChildren,
   },
 } as NestedQueryField<TName, QueryField<TParent, TName, Args<TArgs>, TSelectedChildren>>);
+
+interface FragmentOverloads {
+  <
+    TChildren extends object,
+    TSelectedChildren extends QueryChildren<TChildren>,
+  >(onType: EmptyConstructor<TChildren>, fields: RequireKeys<TSelectedChildren>): TSelectedChildren;
+  <
+    TChildren extends object,
+    TSelectedChildren extends QueryChildren<TChildren>,
+  >(name: string, onType: EmptyConstructor<TChildren>, fields: RequireKeys<TSelectedChildren>): TSelectedChildren
+}
+
+export const fragment: FragmentOverloads = (...args: any[]) => {
+  const [name, onType, fields] = args.length === 3
+    ? args
+    : [undefined, ...args];
+  const f: Fragment<QueryObjectType<any>> = {
+    name,
+    onType,
+    fields,
+  };
+  const mappedObj: any = {};
+  for (const key of Object.keys(fields)) {
+    mappedObj[key] = {
+      ...fields[key],
+      fragment: f,
+    } as QueryField<any, any, any, any>;
+  }
+  return mappedObj;
+}
