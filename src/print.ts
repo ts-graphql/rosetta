@@ -1,5 +1,5 @@
 import { Document, Fragment, isQueryField, QueryField, QueryObjectType, QueryObjectTypeValue } from './types';
-import { VariableDefinitionMap, Variable } from './variables';
+import { VariableDefinitionMap, Variable, VariableDefinition } from './variables';
 import { Args } from './args';
 
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
@@ -30,25 +30,37 @@ export const print = (document: Document<any, QueryObjectType<any>>): string => 
 
 const printVariables = (variables: VariableDefinitionMap): string => {
   return Object.keys(variables)
-    .map((key) => `$${key}: ${variables[key].gqlType}`)
+    .map((key) => printVariable(key, variables[key]))
     .join(', ');
+}
+
+const printVariable = (name: string, variable: VariableDefinition<any, any, any>): string => {
+  let value = `$${name}: ${variable.gqlType}`;
+  if (variable.defaultValue) {
+    value += `${variable.defaultValue ? ` = ${printArgValue(variable.defaultValue)}` : ''}`
+  }
+  return value;
 }
 
 const printArgs = (args: Args<any>): string => {
   return Object.keys(args)
     .map((key) => {
       const value = args[key];
-      if (value instanceof Variable) {
-        return `${key}: $${value.name}`
-      }
-
-      if (value && typeof value === 'object') {
-        return `${key}: { ${printArgs(value)} }`;
-      }
-
-      return `${key}: ${JSON.stringify(value)}`;
+      return `${key}: ${printArgValue(value)}`;
     })
     .join(', ');
+}
+
+const printArgValue = (value: any): string => {
+  if (value instanceof Variable) {
+    return `$${value.name}`;
+  }
+
+  if (value && typeof value === 'object') {
+    return `{ ${printArgs(value)} }`;
+  }
+
+  return JSON.stringify(value);
 }
 
 const resolveFieldForValue = (value: QueryObjectTypeValue<any>): QueryField<any, any, any, any> => {

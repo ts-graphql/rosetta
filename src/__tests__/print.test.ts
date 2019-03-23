@@ -6,11 +6,13 @@ import {
   leafField,
   nonNull,
   print,
-  operation,
+  operation, GQLInt, variable,
 } from '../';
 import { fragment } from '../fields';
 import { GQLIntArg, GQLStringArg } from '../scalars';
 import { MaybeArg } from '../args';
+import { defaultValue } from '../variables';
+import { FooInput } from './testSchema';
 
 class Address {
   line1!: string;
@@ -45,7 +47,7 @@ const query = operation<Query>('query');
 describe('print', () => {
   it('should return expected value for simple query', () => {
     const testQuery = query({
-      ...users({ }, {
+      ...users({}, {
         name,
         email,
         ...address({
@@ -96,17 +98,17 @@ describe('print', () => {
 
   it('should return expected value for unnamed query with variables', () => {
     const testQuery = query(
-      { foo: nonNull(GQLString) },
-      ({ foo }) => ({
-        ...users({ query: foo }, {
+      { foo: nonNull(GQLString), first: defaultValue(nonNull(GQLInt), 10) },
+      ({ foo, first }) => ({
+        ...users({ query: foo, first }, {
           name,
           email,
         }),
       }),
     );
 
-    const expected = `query ($foo: String!) {
-  users(query: $foo) {
+    const expected = `query ($foo: String!, $first: Int! = 10) {
+  users(query: $foo, first: $first) {
     name
     email
   }
@@ -114,6 +116,24 @@ describe('print', () => {
 
     const result = print(testQuery);
     expect(result).toEqual(expected);
+  });
+
+  it('should return expected value for query with default value for object variable', () => {
+    // (this is not a valid query, variable is not used)
+    const testQuery = query(
+      { foo: defaultValue(nonNull(variable(FooInput)), { num: 4, str: 'test' }) },
+      ({ foo }) => ({
+         ...users({}, {
+           name,
+        }),
+      }),
+    );
+
+    const expected = `query ($foo: FooInput! = { num: 4, str: "test" }) {
+  users {
+    name
+  }
+}`;
   });
 
   it('should return expected value for query with name and variables', () => {

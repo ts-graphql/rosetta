@@ -39,7 +39,7 @@ export class Query {
   fooRequiredArg!: Foo;
 }
 
-export type FooInputArg = {
+export type FooArgFields = {
   str: GQLStringArg,
   num: GQLIntArg,
 }
@@ -49,12 +49,14 @@ export class FooInputFields {
   num!: number
 }
 
-export class FooInput extends InputType<FooInputArg, FooInputFields> {
-  argType!: FooInputArg
+export class FooInput extends InputType<FooArgFields, FooInputFields> {
+  argType!: FooArgFields
   value!: FooInputFields
 }
 
-export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<TypeWrapper<FooInputArg, FooInputFields>>, num?: MaybeArg<GQLIntArg> }>('foo');
+export type FooInputArg = TypeWrapper<FooArgFields, FooInputFields>
+
+export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<FooInputArg>, num?: MaybeArg<GQLIntArg> }>('foo');
 export const maybeFooArr = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<TypeWrapper<FooInputArg, FooInputFields>>, num?: MaybeArg<GQLIntArg> }>('foo');
 export const fooRequiredArg = branchFieldWithArgs<Query, 'fooRequiredArg', Foo, { str: GQLStringArg }>('fooRequiredArg');
 
