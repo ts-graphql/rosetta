@@ -1,4 +1,4 @@
-import { EmptyConstructor, Variable } from './variables';
+export type EmptyConstructor<T> = new () => T;
 
 export type ArrayValue<A extends Array<any>> = A extends Array<infer V> ? V : never;
 
@@ -6,7 +6,13 @@ export type EnforceQueryObjectType<T> = T extends QueryObjectType<any> ? T : nev
 
 export type RequireKeys<T extends object> = keyof T extends never ? never : T;
 
-export type Maybe<T> = T | null;
+export type Maybe<T> = T | null | undefined;
+
+export type TypeWrapper<TType, TValue = TType> = {
+  type: TType;
+  valueType: TValue;
+  gqlType: string;
+}
 
 export type ReturnedObjectTypeField<P, N extends keyof P, C> = P[N] extends Array<infer ArrayValue>
   ? ArrayValue extends object ? Array<ReturnedObjectType<EnforceQueryObjectType<C>>> : P[N]
@@ -58,12 +64,6 @@ export type Fragment<TChildren extends QueryChildren<any>> = {
   name?: string,
   fields: TChildren,
 };
-
-export type Args<T> = {
-  [key in keyof T]: Variable<T[key]> | NestedArgs<T[key]>;
-}
-
-export type NestedArgs<T> = T extends object ? Args<T> : T;
 
 export type NestedQueryField<TKey extends keyof any, TField> = {
   [key in TKey]: TField

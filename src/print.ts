@@ -1,5 +1,6 @@
-import { Args, Document, Fragment, isQueryField, QueryField, QueryObjectType, QueryObjectTypeValue } from './types';
+import { Document, Fragment, isQueryField, QueryField, QueryObjectType, QueryObjectTypeValue } from './types';
 import { VariableDefinitionMap, Variable } from './variables';
+import { Args } from './args';
 
 export const print = (document: Document<any, QueryObjectType<any>>): string => {
   const { type, name, variables, query } = document;

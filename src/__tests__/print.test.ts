@@ -9,6 +9,8 @@ import {
   operation,
 } from '../';
 import { fragment } from '../fields';
+import { GQLIntArg, GQLStringArg } from '../scalars';
+import { MaybeArg } from '../args';
 
 class Address {
   line1!: string;
@@ -36,7 +38,7 @@ class Query {
   users!: User[]
 }
 
-const users = branchFieldWithArgs<Query, 'users', User, { first?: number | null, query?: string | null }>('users');
+const users = branchFieldWithArgs<Query, 'users', User, { first?: MaybeArg<GQLIntArg>, query?: MaybeArg<GQLStringArg> }>('users');
 
 const query = operation<Query>('query');
 

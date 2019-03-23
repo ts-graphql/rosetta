@@ -1,12 +1,13 @@
 import {
-  Args,
   NestedQueryField,
   QueryChildren,
   QueryField,
   RequireKeys,
-  isQueryField, Fragment, QueryObjectType,
+  Fragment,
+  QueryObjectType,
+  EmptyConstructor,
 } from './types';
-import { EmptyConstructor } from './variables';
+import { Args } from './args';
 
 export const leafField = <
   TParent,
@@ -22,7 +23,7 @@ export const leafField = <
 export const leafFieldWithArgs = <
   TParent,
   TName extends keyof TParent,
-  TArgs
+  TArgs extends object,
 >(name: TName) => (args: Args<TArgs>): NestedQueryField<TName, QueryField<Pick<TParent, TName>, TName, Args<TArgs>>> => ({
   [name]: {
     name,
@@ -53,7 +54,7 @@ export const branchFieldWithArgs = <
   TParent,
   TName extends keyof TParent,
   TChildren extends object,
-  TArgs,
+  TArgs extends object,
   >(name: TName) => <TSelectedChildren extends QueryChildren<TChildren>>(
   args: Args<TArgs>,
   children: RequireKeys<TSelectedChildren>,

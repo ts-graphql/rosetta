@@ -1,6 +1,9 @@
 import { branchField, branchFieldWithArgs, leafField, leafFieldWithArgs } from '../fields';
-import { Maybe } from '../types';
+import { Maybe, TypeWrapper } from '../types';
 import { operation } from '../operation';
+import { GQLIntArg, GQLStringArg } from '../scalars';
+import { InputType } from '../variables';
+import { MaybeArg } from '../args';
 
 export class Foo {
   maybeStr?: Maybe<string>
@@ -28,7 +31,7 @@ export class Bar {
 export const str = leafField<Bar, 'str'>('str');
 export const int = leafField<Bar, 'int'>('int');
 export const float = leafField<Bar, 'float'>('float');
-export const bool = leafFieldWithArgs<Bar, 'bool', { test?: string }>('bool');
+export const bool = leafFieldWithArgs<Bar, 'bool', { test?: MaybeArg<GQLStringArg> }>('bool');
 
 export class Query {
   foo!: Foo;
@@ -36,13 +39,23 @@ export class Query {
   fooRequiredArg!: Foo;
 }
 
-export class FooInput {
+export type FooInputArg = {
+  str: GQLStringArg,
+  num: GQLIntArg,
+}
+
+export class FooInputFields {
   str!: string
   num!: number
 }
 
-export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: Maybe<FooInput>, num?: Maybe<number> }>('foo');
-export const maybeFooArr = branchFieldWithArgs<Query, 'foo', Foo, { nested?: Maybe<FooInput>, num?: Maybe<number> }>('foo');
-export const fooRequiredArg = branchFieldWithArgs<Query, 'fooRequiredArg', Foo, { str: string }>('fooRequiredArg');
+export class FooInput extends InputType<FooInputArg, FooInputFields> {
+  argType!: FooInputArg
+  value!: FooInputFields
+}
+
+export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<TypeWrapper<FooInputArg, FooInputFields>>, num?: MaybeArg<GQLIntArg> }>('foo');
+export const maybeFooArr = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<TypeWrapper<FooInputArg, FooInputFields>>, num?: MaybeArg<GQLIntArg> }>('foo');
+export const fooRequiredArg = branchFieldWithArgs<Query, 'fooRequiredArg', Foo, { str: GQLStringArg }>('fooRequiredArg');
 
 export const query = operation<Query>('query');

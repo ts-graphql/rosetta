@@ -1,4 +1,12 @@
 export {
+  Args,
+  ArgsField,
+  ListArg,
+  MaybeArg,
+  NestedArgs,
+} from './args';
+
+export {
   branchField,
   branchFieldWithArgs,
   fragment,
@@ -19,23 +27,24 @@ export {
 } from './scalars';
 
 export {
-  Args,
   Document,
   Fragment,
   NestedQueryField,
   QueryChildren,
   QueryObjectType,
   ReturnedObjectType,
+  TypeWrapper,
 } from './types';
 
 export {
+  InputType,
   list,
   nonNull,
   variable,
   wrap,
-  TypeWrapper,
   Variable,
-  VariableMap,
+  VariableDefinition,
   VariableDefinitionMap,
+  VariableMap,
   VariableMapValues,
 } from './variables';

@@ -4,10 +4,6 @@ import { ReturnedObjectType } from '../../types';
 import { Bar, bar, barArr, bool, float, Foo, foo, FooInput, int, maybeStr, query, str } from '../testSchema';
 import { fragment } from '../../fields';
 
-const testFragment = fragment(Foo, {
-  maybeStr,
-});
-
 const queryA = query('a',
   { strVar: nonNull(GQLString) },
   ({ strVar }) => ({
