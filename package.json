@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "rimraf lib && tsc",
+    "prepublishOnly": "npm build",
     "test": "jest"
   },
   "publishConfig": {
