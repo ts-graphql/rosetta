@@ -20,10 +20,15 @@ export { operation } from './operation';
 
 export {
   GQLID,
+  GQLIDArg,
   GQLBoolean,
+  GQLBooleanArg,
   GQLFloat,
+  GQLFloatArg,
   GQLInt,
+  GQLIntArg,
   GQLString,
+  GQLStringArg,
 } from './scalars';
 
 export {
