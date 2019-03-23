@@ -134,6 +134,9 @@ describe('print', () => {
     name
   }
 }`;
+
+    const result = print(testQuery);
+    expect(result).toEqual(expected);
   });
 
   it('should return expected value for query with name and variables', () => {
