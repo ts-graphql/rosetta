@@ -34,6 +34,7 @@ export {
 export {
   Document,
   Fragment,
+  Maybe,
   NestedQueryField,
   QueryChildren,
   QueryObjectType,
