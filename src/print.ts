@@ -2,7 +2,7 @@ import { Document, Fragment, isQueryField, QueryField, QueryObjectType, QueryObj
 import { VariableDefinitionMap, Variable, VariableDefinition } from './variables';
 import { Args } from './args';
 
-export const print = (document: Document<any, QueryObjectType<any>>): string => {
+export const print = (document: Document<any, QueryObjectType<any>, any>): string => {
   const { type, name, variables, query } = document;
   const output = [];
   output.push(

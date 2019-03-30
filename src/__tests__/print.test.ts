@@ -42,7 +42,7 @@ class Query {
 
 const users = branchFieldWithArgs<Query, 'users', User, { first?: MaybeArg<GQLIntArg>, query?: MaybeArg<GQLStringArg> }>('users');
 
-const query = operation<Query>('query');
+const query = operation<Query>('query', Query);
 
 describe('print', () => {
   it('should return expected value for simple query', () => {

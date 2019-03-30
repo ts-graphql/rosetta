@@ -8,10 +8,10 @@ import { MaybeArg } from '../args';
 export class Foo {
   maybeStr?: Maybe<string>
   bar!: Bar;
-  maybeBar?: Bar | null;
+  maybeBar?: Maybe<Bar>;
   barArr!: Bar[];
-  maybeBarArr?: Bar[] | null;
-  maybeBarMaybeArr?: Array<Bar | null> | null;
+  maybeBarArr?: Maybe<Bar[]>;
+  maybeBarMaybeArr?: Maybe<Array<Maybe<Bar>>>;
 }
 
 export const maybeStr = leafField<Foo, 'maybeStr'>('maybeStr');
@@ -33,8 +33,11 @@ export const int = leafField<Bar, 'int'>('int');
 export const float = leafField<Bar, 'float'>('float');
 export const bool = leafFieldWithArgs<Bar, 'bool', { test?: MaybeArg<GQLStringArg> }>('bool');
 
+type FooBar = Partial<Foo & Bar>;
+
 export class Query {
   foo!: Foo;
+  fooBar!: FooBar;
   maybeFooArr?: Maybe<Array<Foo>>;
   fooRequiredArg!: Foo;
 }
@@ -57,7 +60,8 @@ export class FooInput extends InputType<FooArgFields, FooInputFields> {
 export type FooInputArg = TypeWrapper<FooArgFields, FooInputFields>
 
 export const foo = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<FooInputArg>, num?: MaybeArg<GQLIntArg> }>('foo');
+export const fooBar = branchField<Query, 'fooBar', FooBar>('fooBar');
 export const maybeFooArr = branchFieldWithArgs<Query, 'foo', Foo, { nested?: MaybeArg<TypeWrapper<FooInputArg, FooInputFields>>, num?: MaybeArg<GQLIntArg> }>('foo');
 export const fooRequiredArg = branchFieldWithArgs<Query, 'fooRequiredArg', Foo, { str: GQLStringArg }>('fooRequiredArg');
 
-export const query = operation<Query>('query');
+export const query = operation<Query>('query', Query);

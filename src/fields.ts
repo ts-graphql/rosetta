@@ -9,14 +9,20 @@ import {
 } from './types';
 import { Args } from './args';
 
+const baseParams = {
+  fragment: undefined,
+  builtIn: false,
+}
+
 export const leafField = <
   TParent,
-  TName extends keyof TParent
+  TName extends keyof TParent,
 >(name: TName): QueryField<Pick<TParent, TName>, TName> => ({
+  ...baseParams,
   name,
   type: null as unknown as TParent[TName],
   args: {},
-  parent: null as any,
+  parent: null as unknown as TParent,
   children: undefined as QueryChildren<TParent[TName]>,
 });
 
@@ -26,6 +32,7 @@ export const leafFieldWithArgs = <
   TArgs extends object,
 >(name: TName) => (args: Args<TArgs>): NestedQueryField<TName, QueryField<Pick<TParent, TName>, TName, Args<TArgs>>> => ({
   [name]: {
+    ...baseParams,
     name,
     type: null as unknown as TParent[TName],
     args,
@@ -42,6 +49,7 @@ export const branchField = <
   TSelectedChildren extends QueryChildren<TChildren>
   >(children: RequireKeys<TSelectedChildren>): NestedQueryField<TName, QueryField<Pick<TParent, TName>, TName, {}, TSelectedChildren>> => ({
   [name]: {
+    ...baseParams,
     name,
     type: null as unknown as TParent[TName],
     args: {},
@@ -60,11 +68,13 @@ export const branchFieldWithArgs = <
   children: RequireKeys<TSelectedChildren>,
 ): NestedQueryField<TName, QueryField<Pick<TParent, TName>, TName, Args<TArgs>, TSelectedChildren>> => ({
   [name]: {
+    ...baseParams,
     name,
     type: null as unknown as TParent[TName],
     args,
     parent: null as unknown as TParent,
     children: children as TSelectedChildren,
+    fragment: undefined,
   },
 } as NestedQueryField<TName, QueryField<TParent, TName, Args<TArgs>, TSelectedChildren>>);
 
@@ -96,4 +106,20 @@ export const fragment: FragmentOverloads = (...args: any[]) => {
     } as QueryField<any, any, any, any>;
   }
   return mappedObj;
+}
+
+export const __typename: QueryField<
+  Record<any, string>,
+  any,
+  {},
+  undefined,
+  true
+> = {
+  name: '__typename',
+  parent: null as unknown as Record<any, string>,
+  type: null as unknown as string,
+  args: {},
+  children: undefined,
+  fragment: undefined,
+  builtIn: true,
 }

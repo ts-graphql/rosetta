@@ -1,28 +1,29 @@
-import { Document, QueryObjectType, OperationType } from './types';
+import { Document, QueryObjectType, OperationType, EmptyConstructor } from './types';
 import { Variable, VariableMap, VariableDefinitionMap } from './variables';
 
 type QueryFunction<TVariables extends VariableDefinitionMap, TChildren> =
   (variables: VariableMap<TVariables>) => TChildren;
 
-export interface OperationOverloads<TType extends object> {
-  <TChildren extends QueryObjectType<TType>>(query: TChildren): Document<null, TChildren>;
-  <TChildren extends QueryObjectType<TType>>(name: string, query: TChildren): Document<null, TChildren>;
+export interface OperationOverloads<TRoot, TType extends object> {
+  <TChildren extends QueryObjectType<TType>>(query: TChildren): Document<TRoot, TChildren, null>;
+  <TChildren extends QueryObjectType<TType>>(name: string, query: TChildren): Document<TRoot, TChildren, null>;
   <
     TVariables extends VariableDefinitionMap,
     TChildren extends QueryObjectType<TType>
-  >(variables: TVariables, query: QueryFunction<TVariables, TChildren>): Document<TVariables, TChildren>;
+  >(variables: TVariables, query: QueryFunction<TVariables, TChildren>): Document<TRoot, TChildren, null>;
   <
     TVariables extends VariableDefinitionMap,
     TChildren extends QueryObjectType<TType>
-  >(name: string, variables: TVariables, query: QueryFunction<TVariables, TChildren>): Document<TVariables, TChildren>;
+  >(name: string, variables: TVariables, query: QueryFunction<TVariables, TChildren>): Document<TRoot, TChildren, null>;
 }
 
-export const operation = <TType extends object>(type: OperationType): OperationOverloads<TType> =>
+export const operation = <TRoot extends object>(type: OperationType, rootType: EmptyConstructor<TRoot>): OperationOverloads<TRoot, TRoot> =>
   (...args: any[]) => {
   if (args.length === 1) {
     const [query] = args;
     return {
       type,
+      rootType,
       query,
       variables: null,
     };
@@ -31,8 +32,9 @@ export const operation = <TType extends object>(type: OperationType): OperationO
   if (args.length === 2 && typeof args[1] === 'object') {
     const [name, query] = args;
     return {
-      type,
       name,
+      type,
+      rootType,
       query,
       variables: null,
     };
@@ -50,6 +52,7 @@ export const operation = <TType extends object>(type: OperationType): OperationO
   return {
     name,
     type,
+    rootType,
     variables,
     query: query(variableMap),
   };

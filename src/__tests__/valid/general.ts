@@ -1,12 +1,33 @@
 import { nonNull, variable } from '../../variables';
 import { GQLString } from '../../scalars';
 import { ReturnedObjectType } from '../../types';
-import { Bar, bar, barArr, bool, float, Foo, foo, FooInput, int, maybeStr, query, str } from '../testSchema';
-import { fragment } from '../../fields';
+import {
+  Bar,
+  bar,
+  barArr,
+  bool,
+  float,
+  Foo,
+  foo,
+  fooBar,
+  FooInput,
+  int,
+  maybeStr,
+  Query,
+  query,
+  str,
+} from '../testSchema';
+import { __typename, fragment } from '../../fields';
 
 const queryA = query('a',
   { strVar: nonNull(GQLString) },
   ({ strVar }) => ({
+    ...fooBar({
+      ...fragment(Bar, {
+        __typename,
+        float,
+      })
+    }),
     ...foo({ nested: { str: strVar, num: 4 } }, {
       ...bar({
         ...fragment(Bar, {
@@ -29,7 +50,11 @@ const queryA = query('a',
   })
 );
 
-const returnValueA: ReturnedObjectType<typeof queryA.query> = {
+const returnValueA: ReturnedObjectType<typeof queryA.query, Query> = {
+  fooBar: {
+    __typename: 'Bar',
+    float: 4.2,
+  },
   foo: {
     bar: {
       str: 'something',
@@ -106,7 +131,7 @@ const queryWithFragments = query({
   }),
 });
 
-const queryWithFragmentsReturnValue: ReturnedObjectType<typeof queryWithFragments.query> = {
+const queryWithFragmentsReturnValue: ReturnedObjectType<typeof queryWithFragments.query, Query> = {
   foo: {
     maybeStr: null,
     bar: {
@@ -122,7 +147,7 @@ const queryWithFragments2 = query({
   }),
 });
 
-const queryWithFragmentsReturnValue2: ReturnedObjectType<typeof queryWithFragments2.query> = {
+const queryWithFragmentsReturnValue2: ReturnedObjectType<typeof queryWithFragments2.query, Query> = {
   foo: {
     bar: {
       float: 4.5,
