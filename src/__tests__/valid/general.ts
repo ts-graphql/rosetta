@@ -26,6 +26,7 @@ const queryA = query('a',
       ...fragment(Bar, {
         __typename,
         float,
+        float2: float,
       })
     }),
     ...foo({ nested: { str: strVar, num: 4 } }, {
@@ -54,6 +55,7 @@ const returnValueA: ReturnedObjectType<typeof queryA.query, Query> = {
   fooBar: {
     __typename: 'Bar',
     float: 4.2,
+    float2: undefined,
   },
   foo: {
     bar: {

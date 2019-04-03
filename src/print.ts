@@ -19,7 +19,7 @@ export const print = (document: Document<any, QueryObjectType<any>, any>): strin
 
   for (const fragment of namedFragments) {
     if (nameMap[fragment.name!]) {
-      throw new Error('Cannot have different fragments with same name');
+      throw new Error('Cannot use different fragments with same name');
     }
     nameMap[fragment.name!] = true;
     output.push('', ...linesForNamedFragment(fragment));
