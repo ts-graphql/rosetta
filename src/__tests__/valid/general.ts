@@ -10,18 +10,24 @@ import {
   Foo,
   foo,
   fooBar,
-  FooInput,
+  FooInput, id,
   int,
-  maybeStr,
+  maybeStr, name, node,
   Query,
   query,
-  str,
+  str, User,
 } from '../testSchema';
 import { __typename, fragment } from '../../fields';
 
 const queryA = query('a',
   { strVar: nonNull(GQLString) },
   ({ strVar }) => ({
+    ...node({ id: 'foo' }, {
+      id,
+      ...fragment(User, {
+        name,
+      }),
+    }),
     ...fooBar({
       ...fragment(Bar, {
         __typename,
@@ -52,6 +58,10 @@ const queryA = query('a',
 );
 
 const returnValueA: ReturnedObjectType<typeof queryA.query, Query> = {
+  node: {
+    id: 'foo',
+    name: 'Test',
+  },
   fooBar: {
     __typename: 'Bar',
     float: 4.2,
