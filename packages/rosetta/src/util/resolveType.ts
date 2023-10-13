@@ -1,6 +1,6 @@
 import {Maybe} from "./general";
 
-type ResolveApiType<Type extends string, ApiTypes> =
+type ResolveSchemaType<Type extends string, ApiTypes> =
   Type extends keyof ApiTypes ? ApiTypes[Type] : never;
 
 type ResolveBaseType<Type extends string, ApiTypes> =
@@ -9,7 +9,7 @@ type ResolveBaseType<Type extends string, ApiTypes> =
       : Type extends 'Int' ? number
         : Type extends 'Float' ? number
           : Type extends 'Boolean' ? boolean
-            : ResolveApiType<Type, ApiTypes>;
+            : ResolveSchemaType<Type, ApiTypes>;
 
 export type ResolveType<Type extends string, ApiTypes> = Type extends `${infer NonNull}!`
   ? ResolveBaseType<NonNull, ApiTypes>

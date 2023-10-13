@@ -56,14 +56,6 @@ type ObjectScalarFields<Query extends string, BaseType> =
     ? {}
     : Pick<BaseType,  ScalarFields<Query, BaseType>>;
 
-// type NextObjectField<Field extends string, BraceContents extends string, BaseType> =
-//   Field extends keyof BaseType
-//     ? Record<Field, IsNonNullable<BaseType[Field]> extends true
-//         ? FieldObjectType<BraceContents, BaseType[Field]>
-//         : Maybe<FieldObjectType<BraceContents, NonNullable<BaseType[Field]>>>
-//       >
-//     : {};
-
 type ObjectObjectFields<Query extends string, BaseType, Schema, Fragments, Fields = {}> =
   NextToken<Query> extends ''
     ? Fields
