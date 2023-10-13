@@ -6,8 +6,8 @@ export type AfterWhitespace<Query extends string> = Query extends `${Whitespace}
   ? AfterWhitespace<After>
   : Query;
 
-export type BeforeIgnored<Query extends string> = Query extends `${infer Before}${Whitespace}${string}`
-  ? BeforeIgnored<Before>
+export type BeforeWhitespace<Query extends string> = Query extends `${infer Before}${Whitespace}${string}`
+  ? BeforeWhitespace<Before>
   : Query;
 
 export type IsNonNullable<T> = T extends {} ? true : false;

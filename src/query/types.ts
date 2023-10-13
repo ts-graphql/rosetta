@@ -1,4 +1,4 @@
-import {AfterWhitespace, BeforeIgnored, IsNonNullable, Maybe} from "../util/general";
+import {AfterWhitespace, BeforeWhitespace, IsNonNullable, Maybe} from "../util/general";
 import {InsideBraces, OutsideBraces} from "../util/braces";
 
 type FieldObjectType<Query extends string, BaseType> =
@@ -22,7 +22,7 @@ type FieldType<Field extends string, Rest extends string, BaseType> =
     : {};
     // : Record<Field, Rest> // [Field, BaseType];
 
-type ObjectType<Query extends string, BaseType, TField extends string = BeforeIgnored<AfterWhitespace<Query>>> =
+type ObjectType<Query extends string, BaseType, TField extends string = BeforeWhitespace<AfterWhitespace<Query>>> =
   Query extends `${string}${TField}${infer Rest}`
     ? FieldType<TField, Rest, BaseType>
     : Record<TField, Query>;
