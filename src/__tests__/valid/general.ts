@@ -1,24 +1,28 @@
 import {QueryData} from "../../query/types";
-import {Query, Role, SearchResult} from "../schema";
+import {Chat, Query, Role, SearchResult, User} from "../schema";
 import {QueryVariables} from "../../variables/types";
 
 const userQuery = `
+  fragment UserData on User {
+    username
+    email
+    email2: email
+    role
+  }
+
   query user($id: ID!) {
     aliased: user(id: $id) {
-      username
-      email
-      role
+      ...on User {
+        ...UserData
+      }
     }
     user(id: $id) {
-      username
-      email
-      email2: email
-      role
+      ...UserData
     }
   }
 `;
 
-type UserQuery = QueryData<typeof userQuery, Query>;
+type UserQuery = QueryData<typeof userQuery, Query, { User: User }>;
 type UserVariables = QueryVariables<typeof userQuery>;
 
 const userVariables: UserVariables = {
@@ -66,7 +70,14 @@ type test = keyof SearchResult;
 const searchAndChatsQuery = `
   query searchAndChats ($term: String!) {
     search(term: $term) {
-      id
+      ...on Chat {
+        id
+        messages {
+          id
+          content
+          time
+        }
+      }
     }
     myChats {
       id
@@ -79,11 +90,14 @@ const searchAndChatsQuery = `
   }
 `;
 
-type SearchAndChatsQuery = QueryData<typeof searchAndChatsQuery, Query>;
+type SearchAndChatsQuery = QueryData<typeof searchAndChatsQuery, Query, { Chat: Chat }>;
 
 const searchAndChatsHandler = (result: SearchAndChatsQuery) => {
   for (const item of result.search) {
     console.log(item.id);
+    for (const message of item.messages) {
+      console.log(message.id, message.content, message.time);
+    }
   }
 
   for (const chat of result.myChats) {
