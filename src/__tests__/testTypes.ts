@@ -14,9 +14,9 @@ export const typeCheckFolder = async (paths: string[], expectError?: boolean): P
 }
 
 export const typeCheckFiles = async (files: string[], expectError?: boolean) => {
-  await Promise.all(files.map(file => new Promise((resolve, reject) => {
+  await Promise.all(files.map(file => new Promise<void>((resolve, reject) => {
     const tscArgs = '--strict --experimentalDecorators --emitDecoratorMetadata --esModuleInterop --noEmit --lib esnext';
-    exec(`$(npm bin)/tsc ${tscArgs} ${file}`, (err) => {
+    exec(`npx tsc ${tscArgs} ${file}`, (err) => {
       if ((err && expectError) || (!err && !expectError)) {
         resolve();
       } else {

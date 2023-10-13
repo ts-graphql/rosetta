@@ -3,7 +3,7 @@
     "node_modules",
     "./lib",
     "./**/__tests__/",
-    "./testTypes.ts"
+    "./src/__tests__/testTypes.ts"
   ],
   "compilerOptions": {
     "target": "es5",

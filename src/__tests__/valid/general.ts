@@ -1,168 +1,108 @@
-import { nonNull, variable } from '../../variables';
-import { GQLString } from '../../scalars';
-import { ReturnedObjectType } from '../../types';
-import {
-  Bar,
-  bar,
-  barArr,
-  bool,
-  float,
-  Foo,
-  foo,
-  fooBar,
-  FooInput, id,
-  int,
-  maybeStr, name, node,
-  Query,
-  query,
-  str, User,
-} from '../testSchema';
-import { __typename, fragment } from '../../fields';
+import {QueryData} from "../../query/types";
+import {Query, Role, SearchResult} from "../schema";
+import {QueryVariables} from "../../variables/types";
 
-const queryA = query('a',
-  { strVar: nonNull(GQLString) },
-  ({ strVar }) => ({
-    ...node({ id: 'foo' }, {
-      id,
-      ...fragment(User, {
-        name,
-      }),
-    }),
-    ...fooBar({
-      ...fragment(Bar, {
-        __typename,
-        float,
-        float2: float,
-      })
-    }),
-    ...foo({ nested: { str: strVar, num: 4 } }, {
-      ...bar({
-        ...fragment(Bar, {
-          int,
-        }),
-        float,
-        str,
-        str2: str,
-        ...bool({}),
-        bool2: bool({ test: strVar }),
-      }),
-      ...barArr({
-        int,
-        float,
-      })
-    }),
-    foo2: foo({}, {
-      ...bar({ int }),
-    }),
-  })
-);
+const userQuery = `
+  query user($id: ID!) {
+    user(id: $id) {
+      username
+      email
+      role
+    }
+  }
+`;
 
-const returnValueA: ReturnedObjectType<typeof queryA.query, Query> = {
-  node: {
-    id: 'foo',
-    name: 'Test',
-  },
-  fooBar: {
-    __typename: 'Bar',
-    float: 4.2,
-    float2: undefined,
-  },
-  foo: {
-    bar: {
-      str: 'something',
-      str2: 'something',
-      int: 1,
-      float: 0.1,
-      bool: false,
-      bool2: true,
-    },
-    barArr: [{ int: 1, float: 1.2 }],
-  },
-  foo2: {
-    bar: {
-      int: 3,
-    },
-  },
+type UserQuery = QueryData<typeof userQuery, Query>;
+type UserVariables = QueryVariables<typeof userQuery>;
+
+const userVariables: UserVariables = {
+  id: 'foo',
 };
 
-const queryB = query('b',
-  { objVar: variable(FooInput) },
-  ({ objVar }) => ({
-    ...foo({ nested: objVar }, {
-      ...bar({ str }),
-    }),
-  }),
-);
-
-const queryNoNameNoVariables = query({
-  ...foo({}, {
-    maybeStr,
-  }),
-});
-
-const queryNameNoVariables = query('foo', {
-  ...foo({}, {
-    maybeStr,
-  }),
-});
-
-const queryNoNameVariables = query({ objVar: variable(FooInput) }, ({ objVar }) => ({
-  ...foo({ nested: objVar }, {
-    maybeStr,
-  })
-}));
-
-const inlineBarFragment = fragment(Bar, {
-  str,
-  int,
-});
-
-const namedBarFragment = fragment('NamedBarFragment', Bar, {
-  float,
-});
-
-const inlineFragmentWithInlineFragment = fragment(Foo, {
-  maybeStr,
-  ...bar({
-    ...inlineBarFragment,
-  }),
-});
-
-const inlineFragmentWithNamedFragment = fragment(Foo, {
-  ...bar({
-    ...namedBarFragment,
-  }),
-});
-
-const queryWithFragments = query({
-  ...foo({}, {
-    ...inlineFragmentWithInlineFragment,
-    // Types cannot be correct when multiple fragments both include
-    // the same object type field
-    // ...inlineFragmentWithNamedFragment,
-  }),
-});
-
-const queryWithFragmentsReturnValue: ReturnedObjectType<typeof queryWithFragments.query, Query> = {
-  foo: {
-    maybeStr: null,
-    bar: {
-      int: 3,
-      str: '',
+const userHandler = (result: UserQuery) => {
+  if (result.user) {
+    const { username, email, role } = result.user;
+    if (role === Role.Admin) {
+      console.log(username, email);
     }
   }
-}
+};
 
-const queryWithFragments2 = query({
-  ...foo({}, {
-    ...inlineFragmentWithNamedFragment,
-  }),
-});
-
-const queryWithFragmentsReturnValue2: ReturnedObjectType<typeof queryWithFragments2.query, Query> = {
-  foo: {
-    bar: {
-      float: 4.5,
+const allUsersQuery = `
+  query users {
+    allUsers {
+      username
+      email
+      role
     }
   }
-}
+`;
+
+type AllUsersData = QueryData<typeof allUsersQuery, Query>;
+const allUsersVars: QueryVariables<typeof allUsersQuery> = undefined;
+
+const allUsersHandler = (result: AllUsersData) => {
+  result.allUsers?.map((user) => {
+    if (user) {
+      console.log(user.email, user.role, user.username);
+    }
+  });
+};
+
+type test = keyof SearchResult;
+
+const searchAndChatsQuery = `
+  query searchAndChats ($term: String!) {
+    search(term: $term) {
+      id
+    }
+    myChats {
+      id
+      messages {
+        id
+        content
+        time
+      }
+    }
+  }
+`;
+
+type SearchAndChatsQuery = QueryData<typeof searchAndChatsQuery, Query>;
+
+const searchAndChatsHandler = (result: SearchAndChatsQuery) => {
+  for (const item of result.search) {
+    console.log(item.id);
+  }
+
+  for (const chat of result.myChats) {
+    console.log(chat.id);
+    for (const message of chat.messages) {
+      console.log(message.id, message.time, message.content);
+    }
+  }
+};
+
+const userAndSearch = `
+  query userAndSearch ($id: ID!, $term: String!) {
+    user(id: $id) {
+      email
+    }
+    search(term: $term) {
+      id
+    }
+  }
+`;
+
+type UserAndSearchData = QueryData<typeof userAndSearch, Query>;
+type UserAndSearchVariables = QueryVariables<typeof userAndSearch>;
+const userSearchVars: UserAndSearchVariables = {
+  term: 'foo',
+  id: 'id',
+};
+
+const userAndSearchHandler = (result: UserAndSearchData) => {
+  for (const item of result.search) {
+    console.log(item.id);
+  }
+  console.log(result.user?.email);
+};

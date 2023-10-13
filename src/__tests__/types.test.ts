@@ -1,5 +1,5 @@
 import 'jest';
-import { typeCheckFolder } from '../../testTypes';
+import { typeCheckFolder } from './testTypes';
 
 describe('types', () => {
   describe('invalid files', () => {
