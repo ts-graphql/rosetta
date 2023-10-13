@@ -43,17 +43,17 @@ jobs:
       - build
       - run:
           name: Test
-          command: ./.circleci/test.sh
+          command: yarn test:ci
 
-    publish:
-      docker:
-        - image: cimg/node:20.8.0
-      steps:
-        - checkout
-        - build
-        - run:
-            name: Add npm token
-            command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-        - run:
-            name: Publish
-            command: ./.circleci/publish.sh
+  publish:
+    docker:
+      - image: cimg/node:20.8.0
+    steps:
+      - checkout
+      - build
+      - run:
+          name: Add npm token
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
+          name: Publish
+          command: ./.circleci/publish.sh

@@ -5,7 +5,8 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "test:ci": "lerna run test:ci"
   },
   "dependencies": {
     "lerna": "^7.3.1"
