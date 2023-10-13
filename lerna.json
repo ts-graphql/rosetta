@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.0.0",
+  "version": "independent",
   "npmClient": "yarn",
   "command": {
     "publish": {
@@ -8,7 +8,7 @@
       "message": "chore(release): publish [skip ci]"
     },
     "version": {
-      "allowBranch": ["master"]
+      "allowBranch": ["main"]
     }
   }
 }
