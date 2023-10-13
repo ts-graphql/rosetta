@@ -5,8 +5,11 @@ workflows:
     jobs:
       - test
       - publish:
+          requires:
+            - test
           context:
             - npm
+            - github
           filters:
             branches:
               only:
