@@ -4,9 +4,15 @@ import {QueryVariables} from "../../variables/types";
 
 const userQuery = `
   query user($id: ID!) {
+    aliased: user(id: $id) {
+      username
+      email
+      role
+    }
     user(id: $id) {
       username
       email
+      email2: email
       role
     }
   }
@@ -20,10 +26,16 @@ const userVariables: UserVariables = {
 };
 
 const userHandler = (result: UserQuery) => {
-  if (result.user) {
-    const { username, email, role } = result.user;
+  if (result.aliased) {
+    const { username, email, role } = result.aliased;
     if (role === Role.Admin) {
       console.log(username, email);
+    }
+  }
+  if (result.user) {
+    const { username, email, email2, role } = result.user;
+    if (role === Role.Admin) {
+      console.log(username, email, email2);
     }
   }
 };

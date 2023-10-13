@@ -5,15 +5,15 @@ type GetBraceContents<PreOpen extends string, PostOpen extends string, Depth ext
   ? Depth extends AddDepth<''>
     ? PreClose
     // @ts-ignore
-    : `${PreClose}}${InsideBraces<`${PostClose}{${PostOpen}`, SubtractDepth<Depth>>}`
+    : `${PreClose}}${InsideNextBraces<`${PostClose}{${PostOpen}`, SubtractDepth<Depth>>}`
   : Depth extends ''
-    ? InsideBraces<PostOpen, AddDepth<Depth>>
-    : `${PreOpen}{${InsideBraces<PostOpen,  AddDepth<Depth>>}`
+    ? InsideNextBraces<PostOpen, AddDepth<Depth>>
+    : `${PreOpen}{${InsideNextBraces<PostOpen,  AddDepth<Depth>>}`
 
-export type InsideBraces<Query extends string, Depth extends string = ''> = Query extends `${infer PreOpen}{${infer PostOpen}`
+export type InsideNextBraces<Query extends string, Depth extends string = ''> = Query extends `${infer PreOpen}{${infer PostOpen}`
   ? GetBraceContents<PreOpen, PostOpen, Depth>
   : Depth extends '' ? '' : GetBraceContents<Query, '', Depth>;
 
-export type OutsideBraces<Query extends string> = Query extends `${infer Before}{${InsideBraces<Query>}}${infer After}`
+export type OutsideNextBraces<Query extends string> = Query extends `${infer Before}{${InsideNextBraces<Query>}}${infer After}`
   ? `${Before}${After}`
   : Query;

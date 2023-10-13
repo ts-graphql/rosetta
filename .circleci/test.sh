@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 npx jest --coverage --coverageReporters=text-lcov | npx coveralls
