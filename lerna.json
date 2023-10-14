@@ -4,7 +4,7 @@
   "npmClient": "yarn",
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md"],
+      "ignoreChanges": ["*.md", "*.txt"],
       "message": "chore(release): publish [skip ci]"
     },
     "version": {
