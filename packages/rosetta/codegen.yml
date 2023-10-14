@@ -2,4 +2,4 @@ schema: ./src/__tests__/schema.graphql
 generates:
   ./src/__tests__/schema.ts:
     plugins:
-      - typescript
+      - ../codegen/dist/index.js

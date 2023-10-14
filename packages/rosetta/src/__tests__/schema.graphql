@@ -2,6 +2,17 @@ scalar Date
 
 schema {
   query: Query
+  mutation: Mutation
+}
+
+input AddUserInput {
+  username: String!
+  email: String!
+  role: Role!
+}
+
+type Mutation {
+  addUser(input: AddUserInput!): User
 }
 
 type Query {

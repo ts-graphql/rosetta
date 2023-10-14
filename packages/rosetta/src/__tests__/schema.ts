@@ -15,6 +15,12 @@ export type Scalars = {
   Date: { input: any; output: any; }
 };
 
+export type AddUserInput = {
+  email: Scalars['String']['input'];
+  role: Role;
+  username: Scalars['String']['input'];
+};
+
 export type Chat = Node & {
   __typename?: 'Chat';
   id: Scalars['ID']['output'];
@@ -28,6 +34,16 @@ export type ChatMessage = Node & {
   id: Scalars['ID']['output'];
   time: Scalars['Date']['output'];
   user: User;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addUser?: Maybe<User>;
+};
+
+
+export type Mutation_addUserArgs = {
+  input: AddUserInput;
 };
 
 export type Node = {
@@ -44,12 +60,12 @@ export type Query = {
 };
 
 
-export type QuerySearchArgs = {
+export type Query_searchArgs = {
   term: Scalars['String']['input'];
 };
 
 
-export type QueryUserArgs = {
+export type Query_userArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -67,3 +83,15 @@ export type User = Node & {
   role: Role;
   username: Scalars['String']['output'];
 };
+
+export type Schema = {
+  AddUserInput: AddUserInput;
+  Chat: Chat;
+  ChatMessage: ChatMessage;
+  Mutation: Mutation;
+  Node: Node;
+  Query: Query;
+  Role: Role;
+  SearchResult: SearchResult;
+  User: User;
+}

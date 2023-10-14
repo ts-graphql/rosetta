@@ -1,6 +1,9 @@
 import {QueryData} from "../../query/types";
-import {Chat, Query, Role, SearchResult, User} from "../schema";
+import {Query, Role, Schema, SearchResult} from "../schema";
 import {QueryVariables} from "../../variables/types";
+
+type TestData<Query extends string, BaseType> = QueryData<Query, BaseType, Schema>;
+type TestVariables<Query extends string> = QueryVariables<Query, Schema>;
 
 const userQuery = `
   fragment UserData on User {
@@ -22,8 +25,8 @@ const userQuery = `
   }
 `;
 
-type UserQuery = QueryData<typeof userQuery, Query, { User: User }>;
-type UserVariables = QueryVariables<typeof userQuery>;
+type UserQuery = TestData<typeof userQuery, Query>;
+type UserVariables = TestVariables<typeof userQuery>;
 
 const userVariables: UserVariables = {
   id: 'foo',
@@ -38,7 +41,7 @@ const userHandler = (result: UserQuery) => {
   }
   if (result.user) {
     const { username, email, email2, role } = result.user;
-    if (role === Role.Admin) {
+    if (role === Role.User) {
       console.log(username, email, email2);
     }
   }
@@ -54,8 +57,8 @@ const allUsersQuery = `
   }
 `;
 
-type AllUsersData = QueryData<typeof allUsersQuery, Query>;
-const allUsersVars: QueryVariables<typeof allUsersQuery> = undefined;
+type AllUsersData = TestData<typeof allUsersQuery, Query>;
+const allUsersVars: TestVariables<typeof allUsersQuery> = undefined;
 
 const allUsersHandler = (result: AllUsersData) => {
   result.allUsers?.map((user) => {
@@ -90,7 +93,7 @@ const searchAndChatsQuery = `
   }
 `;
 
-type SearchAndChatsQuery = QueryData<typeof searchAndChatsQuery, Query, { Chat: Chat }>;
+type SearchAndChatsQuery = TestData<typeof searchAndChatsQuery, Query>;
 
 const searchAndChatsHandler = (result: SearchAndChatsQuery) => {
   for (const item of result.search) {
@@ -119,8 +122,8 @@ const userAndSearch = `
   }
 `;
 
-type UserAndSearchData = QueryData<typeof userAndSearch, Query>;
-type UserAndSearchVariables = QueryVariables<typeof userAndSearch>;
+type UserAndSearchData = TestData<typeof userAndSearch, Query>;
+type UserAndSearchVariables = TestVariables<typeof userAndSearch>;
 const userSearchVars: UserAndSearchVariables = {
   term: 'foo',
   id: 'id',
