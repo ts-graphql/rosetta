@@ -1,0 +1,45 @@
+{
+  "name": "@ts-graphql/rosetta-codegen",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "dependencies": {
+    "@graphql-codegen/plugin-helpers": "^5.0.1",
+    "@graphql-codegen/typescript": "^4.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.test.(ts|tsx)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/*.d.ts",
+      "!**/__tests__/**",
+      "!testTypes.ts"
+    ]
+  }
+}
